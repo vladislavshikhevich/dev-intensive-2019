@@ -9,12 +9,12 @@ object Utils {
     }
 
     fun parseFullName(fullName: String?) : Pair<String?, String?> {
-        val parts : List<String>? = fullName?.split(" ")
+        if(fullName.isNullOrEmpty() || fullName.isNullOrBlank()) return null to null
 
-        var s = parts?.getOrNull(0)
-        val firstName = if(s.isNullOrEmpty()) "Vlad" else s
-        s = parts?.getOrNull(1)
-        val lastName = if(s.isNullOrEmpty()) "Shikhevich" else s
+        val parts : List<String>? = fullName.split(" ")
+
+        val firstName = parts?.getOrNull(0)
+        val lastName = parts?.getOrNull(1)
 
         return firstName to lastName
     }
@@ -24,11 +24,30 @@ object Utils {
         divider: String = " ",
         transliterationUnits: TransliterationUnits = Utils.TransliterationUnits.CYRILLIC_TO_LATIN) : String {
         val toLatinTrans = Transliterator.getInstance(transliterationUnits.denomination)
-        return toLatinTrans.transliterate(payLoad)
+        val parts : List<String>? = payLoad.split(" ")
+        return "${toLatinTrans.transliterate(parts!![0])}$divider${toLatinTrans.transliterate(parts[1])}"
     }
 
     fun toInitials(firstName: String?, lastName: String?) : String? {
-        if(firstName.isNullOrEmpty() || lastName.isNullOrEmpty()) return null
-        return "${if(firstName.isNullOrEmpty()) "" else firstName[0]} ${if(lastName.isNullOrEmpty()) "" else lastName[0]}"
+
+        var i1 = firstName?.getOrNull(0)
+        var i2 = lastName?.getOrNull(0)
+
+        if(firstName.isNullOrBlank())
+            i1 = null
+
+        if(lastName.isNullOrBlank())
+            i2 = null
+
+        return when {
+            i1 == null && i2 == null
+            -> null
+            i1 == null && i2 != null
+            -> "$i2".toUpperCase()
+            i1 != null && i2 == null
+            -> "$i1".toUpperCase()
+            else
+            -> "$i1$i2".toUpperCase()
+        }
     }
 }

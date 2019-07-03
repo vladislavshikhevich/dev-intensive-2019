@@ -3,6 +3,7 @@ package ru.skillbranch.dev_intensive.extensions
 import java.lang.UnsupportedOperationException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
 
 const val SECOND = 1000L
 const val MINUTE = 60 * SECOND
@@ -40,6 +41,40 @@ fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND) : Date {
 fun Date.humanizeDiff(date: Date = Date()) : String {
     this.time = date.time - this.time
     return when {
+        this.time in -SECOND until -2 * SECOND
+        -> "через ${abs(this.time / SECOND)} секунду"
+        this.time in -2 * SECOND until -5 * SECOND
+        -> "через ${abs(this.time / SECOND)} секунды"
+        this.time in -5 * SECOND until -10 * SECOND
+        -> "через ${abs(this.time / SECOND)} секунд"
+        this.time in -10 * SECOND until -MINUTE
+        -> "через несколько секунд"
+        this.time in -MINUTE until -2 * MINUTE
+        -> "через ${abs(this.time / MINUTE)} минуту"
+        this.time == -2 * MINUTE
+        -> "через ${abs(this.time / MINUTE)} минуты"
+        this.time in -3 * MINUTE until -10 * MINUTE
+        -> "через ${abs(this.time / MINUTE)} минут"
+        this.time in -10 * MINUTE until -HOUR
+        -> "через несколько минут"
+        this.time in -HOUR until -2 * HOUR
+        -> "через ${abs(this.time / HOUR)} час"
+        this.time in -2 * HOUR until -5 * HOUR
+        -> "через ${abs(this.time / HOUR)} часа назад"
+        this.time in -5 * HOUR until -10 * HOUR
+        -> "через ${abs(this.time / HOUR)} часов"
+        this.time in -10 * HOUR until -DAY
+        -> "через несколько часов"
+        this.time in -DAY until -2 * DAY
+        -> "через ${abs(this.time / DAY)} день"
+        this.time in -2 * DAY until -5 * DAY
+        -> "через ${abs(this.time / DAY)} дня"
+        this.time < (-5 * DAY) && this.time > (-10 * DAY)
+        -> "через ${abs(this.time / DAY)} дней"
+        this.time in -10 * DAY until -YEAR
+        -> "через несколько дней"
+        this.time < -YEAR
+        -> "более чем через год"
         this.time in 0L until SECOND
         -> "только что"
         this.time in SECOND until 2 * SECOND
@@ -52,16 +87,20 @@ fun Date.humanizeDiff(date: Date = Date()) : String {
         -> "несколько секунд назад"
         this.time in MINUTE until 2 * MINUTE
         -> "${this.time / MINUTE} минуту назад"
+        this.time == 2 * MINUTE
+        -> "${this.time / MINUTE} минуты назад"
         this.time in 2 * MINUTE until 10 * MINUTE
         -> "${this.time / MINUTE} минут назад"
         this.time in 10 * MINUTE until HOUR
         -> "несколько минут назад"
         this.time in HOUR until 2 * HOUR
-        -> "${this.time / DAY} час назад"
+        -> "${this.time / HOUR} час назад"
         this.time in 2 * HOUR until 5 * HOUR
-        -> "${this.time / DAY} часа назад"
+        -> "${this.time / HOUR} часа назад"
         this.time in 5 * HOUR until 10 * HOUR
-        -> "${this.time / DAY} часов назад"
+        -> "${this.time / HOUR} часов назад"
+        this.time in 10 * HOUR until DAY
+        -> "несколько часов назад"
         this.time in DAY until 2 * DAY
         -> "${this.time / DAY} день назад"
         this.time in 2 * DAY until 5 * DAY
