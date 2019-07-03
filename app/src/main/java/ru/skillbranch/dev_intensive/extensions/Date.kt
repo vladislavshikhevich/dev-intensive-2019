@@ -11,11 +11,16 @@ const val HOUR = 60 * MINUTE
 const val DAY = 24 * HOUR
 const val YEAR = 365 * DAY
 
-enum class TimeUnits constructor(val denomination: String){
-    SECOND("second(s)"),
-    MINUTE("minute(s)"),
-    HOUR("hour(s)"),
-    DAY("day(s)");
+enum class TimeUnits constructor(var denomination: String){
+    SECOND("second"),
+    MINUTE("minute"),
+    HOUR("hour"),
+    DAY("day");
+
+    fun plural(count: Int) : TimeUnits {
+        if(count > 1) denomination += "s"
+        return this
+    }
 }
 
 fun Date.format(pattern: String = "HH:mm:ss dd.MM.yy") : String {
@@ -41,75 +46,39 @@ fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND) : Date {
 fun Date.humanizeDiff(date: Date = Date()) : String {
     this.time = date.time - this.time
     return when {
-        this.time in -SECOND until -2 * SECOND
-        -> "через ${abs(this.time / SECOND)} секунду"
-        this.time in -2 * SECOND until -5 * SECOND
-        -> "через ${abs(this.time / SECOND)} секунды"
-        this.time in -5 * SECOND until -10 * SECOND
-        -> "через ${abs(this.time / SECOND)} секунд"
-        this.time in -10 * SECOND until -MINUTE
+        this.time < -SECOND && this.time > -45 * SECOND
         -> "через несколько секунд"
-        this.time in -MINUTE until -2 * MINUTE
-        -> "через ${abs(this.time / MINUTE)} минуту"
-        this.time == -2 * MINUTE
-        -> "через ${abs(this.time / MINUTE)} минуты"
-        this.time in -3 * MINUTE until -10 * MINUTE
+        this.time < -45 * SECOND && this.time > -75 * SECOND
+        -> "через минуту"
+        this.time < -75 * SECOND && this.time > -45 * MINUTE
         -> "через ${abs(this.time / MINUTE)} минут"
-        this.time in -10 * MINUTE until -HOUR
-        -> "через несколько минут"
-        this.time in -HOUR until -2 * HOUR
-        -> "через ${abs(this.time / HOUR)} час"
-        this.time in -2 * HOUR until -5 * HOUR
-        -> "через ${abs(this.time / HOUR)} часа назад"
-        this.time in -5 * HOUR until -10 * HOUR
+        this.time < -45 * MINUTE && this.time > -75 * MINUTE
+        -> "через час"
+        this.time < -75 * MINUTE && this.time > -22 * HOUR
         -> "через ${abs(this.time / HOUR)} часов"
-        this.time in -10 * HOUR until -DAY
-        -> "через несколько часов"
-        this.time in -DAY until -2 * DAY
-        -> "через ${abs(this.time / DAY)} день"
-        this.time in -2 * DAY until -5 * DAY
-        -> "через ${abs(this.time / DAY)} дня"
-        this.time < (-5 * DAY) && this.time > (-10 * DAY)
+        this.time < -22 * HOUR && this.time > -26 * HOUR
+        -> "через день"
+        this.time < -26 * HOUR && this.time > -360 * DAY
         -> "через ${abs(this.time / DAY)} дней"
-        this.time in -10 * DAY until -YEAR
-        -> "через несколько дней"
-        this.time < -YEAR
+        this.time < -360 * DAY
         -> "более чем через год"
         this.time in 0L until SECOND
         -> "только что"
-        this.time in SECOND until 2 * SECOND
-        -> "${this.time / SECOND} секунду назад"
-        this.time in 2 * SECOND until 5 * SECOND
-        -> "${this.time / SECOND} секунды назад"
-        this.time in 5 * SECOND until 10 * SECOND
-        -> "${this.time / SECOND} секунд назад"
-        this.time in 10 * SECOND until MINUTE
+        this.time in SECOND until 45 * SECOND
         -> "несколько секунд назад"
-        this.time in MINUTE until 2 * MINUTE
-        -> "${this.time / MINUTE} минуту назад"
-        this.time == 2 * MINUTE
-        -> "${this.time / MINUTE} минуты назад"
-        this.time in 2 * MINUTE until 10 * MINUTE
+        this.time in 45 * SECOND until 75 * SECOND
+        -> "минуту назад"
+        this.time in 75 * SECOND until 45 * MINUTE
         -> "${this.time / MINUTE} минут назад"
-        this.time in 10 * MINUTE until HOUR
-        -> "несколько минут назад"
-        this.time in HOUR until 2 * HOUR
-        -> "${this.time / HOUR} час назад"
-        this.time in 2 * HOUR until 5 * HOUR
-        -> "${this.time / HOUR} часа назад"
-        this.time in 5 * HOUR until 10 * HOUR
+        this.time in 45 * MINUTE until 75 * MINUTE
+        -> "час назад"
+        this.time in 75 * MINUTE until 22 * HOUR
         -> "${this.time / HOUR} часов назад"
-        this.time in 10 * HOUR until DAY
-        -> "несколько часов назад"
-        this.time in DAY until 2 * DAY
-        -> "${this.time / DAY} день назад"
-        this.time in 2 * DAY until 5 * DAY
-        -> "${this.time / DAY} дня назад"
-        this.time in 5 * DAY until 10 * DAY
+        this.time in 22 * HOUR until 26 * HOUR
+        -> "день назад"
+        this.time in 26 * HOUR until 360 * DAY
         -> "${this.time / DAY} дней назад"
-        this.time in 10 * DAY until YEAR
-        -> "несколько дней назад"
-        this.time > YEAR
+        this.time > 360 * DAY
         -> "более года назад"
         else
         -> throw UnsupportedOperationException("this time ${this.time} cannot be calculated")
