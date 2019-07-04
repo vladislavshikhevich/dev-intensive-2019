@@ -1,4 +1,4 @@
-package ru.skillbranch.dev_intensive.utils
+package ru.skillbranch.devintensive.utils
 
 import com.ibm.icu.text.Transliterator
 

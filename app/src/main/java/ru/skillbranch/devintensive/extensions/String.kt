@@ -1,4 +1,4 @@
-package ru.skillbranch.dev_intensive.extensions
+package ru.skillbranch.devintensive.extensions
 
 fun String.truncate(count: Int = 16) : String {
     return if(this.length >= count)

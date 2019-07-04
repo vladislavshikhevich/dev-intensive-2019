@@ -1,4 +1,4 @@
-package ru.skillbranch.dev_intensive.extensions
+package ru.skillbranch.devintensive.extensions
 
 import java.lang.UnsupportedOperationException
 import java.text.SimpleDateFormat
