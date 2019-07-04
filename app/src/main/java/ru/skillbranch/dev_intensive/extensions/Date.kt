@@ -11,15 +11,58 @@ const val HOUR = 60 * MINUTE
 const val DAY = 24 * HOUR
 const val YEAR = 365 * DAY
 
-enum class TimeUnits constructor(var denomination: String){
-    SECOND("second"),
-    MINUTE("minute"),
-    HOUR("hour"),
-    DAY("day");
+enum class TimeUnits {
+    SECOND,
+    MINUTE,
+    HOUR,
+    DAY;
 
-    fun plural(count: Int) : TimeUnits {
-        if(count > 1) denomination += "s"
-        return this
+    fun plural(value: Int) : String {
+
+        val list1 = arrayOf(1, 21, 31, 41, 51)
+        val list2 = arrayOf(2, 3, 4, 22, 23, 24, 32, 33, 34, 42, 43, 44, 52, 53, 54)
+        val list3 = arrayOf(5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 26, 27, 28, 29, 30, 35, 36, 37, 38, 39, 40, 45, 46, 47, 48, 49, 50, 55, 56, 57, 58, 59)
+
+        var suf = ""
+        when(this) {
+            SECOND -> {
+                suf = when {
+                    abs(value) in list1 -> "секунду"
+                    abs(value) in list2 -> "секунды"
+                    abs(value) in list3 -> "секунд"
+                    else -> ""
+                }
+
+            }
+            MINUTE -> {
+                suf = when {
+                    abs(value) in list1 -> "минуту"
+                    abs(value) in list2 -> "минуты"
+                    abs(value) in list3 -> "минут"
+                    else -> ""
+                }
+
+            }
+            HOUR -> {
+                suf = when {
+                    abs(value) in list1 -> "час"
+                    abs(value) in list2 -> "часа"
+                    abs(value) in list3 -> "часов"
+                    else -> ""
+                }
+
+            }
+            DAY -> {
+                suf = when {
+                    abs(value) in list1 -> "день"
+                    abs(value) in list2 -> "дня"
+                    abs(value) in list3 -> "дней"
+                    else -> ""
+                }
+
+            }
+        }
+        return "$value $suf"
     }
 }
 
