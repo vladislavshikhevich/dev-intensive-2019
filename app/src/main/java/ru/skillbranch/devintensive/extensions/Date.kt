@@ -1,5 +1,6 @@
 package ru.skillbranch.devintensive.extensions
 
+import ru.skillbranch.devintensive.extensions.TimeUnits.Companion.pluralForm
 import java.lang.UnsupportedOperationException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -12,7 +13,96 @@ const val DAY = 24 * HOUR
 const val YEAR = 365 * DAY
 
 enum class TimeUnits {
-    SECOND, MINUTE, HOUR, DAY;
+    SECOND {
+        fun plural(value: Int) : String {
+            val form = when {
+                value % 10 == 1 && value != 11 -> 0
+                value % 10 in 2..4 -> 1
+                else -> 2
+            }
+            return arrayListOf(
+                "%s секунду",
+                "%s секунды",
+                "%s секунд"
+            )[form].format(value)
+        }
+    },
+
+    MINUTE {
+        fun plural(value: Int) : String {
+            val form = when {
+                value % 10 == 1 && value != 11 -> 0
+                value % 10 in 2..4 -> 1
+                else -> 2
+            }
+            return arrayListOf(
+                "%s минуту",
+                "%s минуты",
+                "%s минут"
+            )[form].format(value)
+        }
+    },
+
+    HOUR {
+        fun plural(value: Int) : String {
+            val form = when {
+                value % 10 == 1 && value != 11 -> 0
+                value % 10 in 2..4 -> 1
+                else -> 2
+            }
+            return arrayListOf(
+                "%s час",
+                "%s часа",
+                "%s часов"
+            )[form].format(value)
+        }
+    },
+
+    DAY {
+        fun plural(value: Int) : String {
+            val form = when {
+                value % 10 == 1 && value != 11 -> 0
+                value % 10 in 2..4 -> 1
+                else -> 2
+            }
+            return arrayListOf(
+                "%s день",
+                "%s дня",
+                "%s дней"
+            )[form].format(value)
+        }
+    };
+
+    companion object {
+        fun pluralForm(value: Int, unit: TimeUnits): String {
+
+
+            val form = when {
+                value % 10 == 1 && value != 11 -> 0
+                value % 10 in 2..4 -> 1
+                else -> 2
+            }
+            return arrayListOf(
+                "%s секунду",
+                "%s секунды",
+                "%s секунд",
+                "%s минуту",
+                "%s минуты",
+                "%s минут",
+                "%s час",
+                "%s часа",
+                "%s часов",
+                "%s день",
+                "%s дня",
+                "%s дней"
+            )[form + 3 * when (unit) {
+                TimeUnits.SECOND -> 0
+                TimeUnits.MINUTE -> 1
+                TimeUnits.HOUR -> 2
+                TimeUnits.DAY -> 3
+            }].format(value)
+        }
+    }
 }
 
 fun Date.format(pattern: String = "HH:mm:ss dd.MM.yy") : String {
@@ -55,33 +145,4 @@ fun Date.humanizeDiff(date: Date = Date()) : String  = when {
             }
         )
     }
-}
-
-private fun pluralForm(value: Int, unit: TimeUnits): String {
-
-
-    val form = when {
-        value % 10 == 1 && value != 11 -> 0
-        value % 10 in 2..4 -> 1
-        else -> 2
-    }
-    return arrayListOf(
-        "%s секунду",
-        "%s секунды",
-        "%s секунд",
-        "%s минуту",
-        "%s минуты",
-        "%s минут",
-        "%s час",
-        "%s часа",
-        "%s часов",
-        "%s день",
-        "%s дня",
-        "%s дней"
-    )[form + 3 * when (unit) {
-        TimeUnits.SECOND -> 0
-        TimeUnits.MINUTE -> 1
-        TimeUnits.HOUR -> 2
-        TimeUnits.DAY -> 3
-    }].format(value)
 }
