@@ -7,6 +7,16 @@ fun String.truncate(count: Int = 16) : String {
         "${this.trim()}..."
 }
 
-fun String.strimHtml() : String {
-    return ""
+fun String.stripHtml() : String {
+
+    val openPos = this.indexOf("<")
+    val closePos = this.indexOf(">")
+
+    return if (openPos >= 0 && closePos >= 0) {
+        var newData = this.substring(0,openPos)
+        newData += this.substring(closePos + 1, this.length)
+        newData.stripHtml().replace("\\\\s{1,}", "\\u0020")
+    }
+    else
+        this.replace("\\\\s{1,}", "\\u0020")
 }
