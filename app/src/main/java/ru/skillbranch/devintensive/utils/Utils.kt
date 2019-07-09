@@ -1,6 +1,6 @@
 package ru.skillbranch.devintensive.utils
 
-import com.ibm.icu.text.UTF16.append
+import ru.skillbranch.devintensive.extensions.TimeUnits
 
 object Utils {
 
@@ -44,6 +44,33 @@ object Utils {
 
         payload.asSequence().forEach {
             append(if (it == ' ') divider else it.transliterate())
+        }
+    }
+
+    fun getPluralForm(value: Long, plurals: Array<String>) : String {
+        val mod100 = value % 100
+
+        // 1, 21, 31, ...
+        val firstFormCases = LongRange(0, 9).map { it * 10 + 1 }.filter { it != 11L }
+
+        // 2, 3, 4, 22, 23, 24, ...
+        val secondFormCases = LongRange(0, 9).map {
+            arrayOf(it * 10 + 2, it * 10 + 3, it * 10 + 4)
+        }.toTypedArray().flatten().filter { it !in 12..14 }
+
+        return when(mod100) {
+            in firstFormCases -> plurals[0]
+            in secondFormCases -> plurals[1]
+            else -> plurals[2]
+        }
+    }
+
+    fun getPluralsForms(units: TimeUnits) : Array<String> {
+        return when(units) {
+            TimeUnits.SECOND -> arrayOf("секунду", "секунды", "секунд")
+            TimeUnits.MINUTE -> arrayOf("минуту", "минуты", "минут")
+            TimeUnits.HOUR -> arrayOf("час", "часа", "часов")
+            TimeUnits.DAY -> arrayOf("день", "дня", "дней")
         }
     }
 }
