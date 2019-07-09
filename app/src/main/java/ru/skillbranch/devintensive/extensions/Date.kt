@@ -103,6 +103,35 @@ enum class TimeUnits {
             }].format(value)
         }
     }
+
+    fun pluralForm(value: Int, unit: TimeUnits): String {
+
+
+        val form = when {
+            value % 10 == 1 && value != 11 -> 0
+            value % 10 in 2..4 -> 1
+            else -> 2
+        }
+        return arrayListOf(
+            "%s секунду",
+            "%s секунды",
+            "%s секунд",
+            "%s минуту",
+            "%s минуты",
+            "%s минут",
+            "%s час",
+            "%s часа",
+            "%s часов",
+            "%s день",
+            "%s дня",
+            "%s дней"
+        )[form + 3 * when (unit) {
+            TimeUnits.SECOND -> 0
+            TimeUnits.MINUTE -> 1
+            TimeUnits.HOUR -> 2
+            TimeUnits.DAY -> 3
+        }].format(value)
+    }
 }
 
 fun Date.format(pattern: String = "HH:mm:ss dd.MM.yy") : String {
