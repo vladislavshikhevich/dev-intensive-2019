@@ -13,3 +13,43 @@ fun String.stripHtml() : String {
         ), "")
         .replace(Regex(" {2,}"), " ")
 }
+
+fun String.isStartsUpperCase(): Boolean {
+    if(this.isEmpty()) return false
+
+    return this.toCharArray()[0].isUpperCase()
+}
+
+fun String.isStartsLowerCase(): Boolean {
+    if(this.isEmpty()) return false
+
+    return this.toCharArray()[0].isLowerCase()
+}
+
+fun String.containsDigit(): Boolean {
+    if(this.isEmpty()) return false
+
+    this.toCharArray().forEach {
+        if (!Character.isLetter(it))
+            return false
+    }
+
+    return true
+}
+
+fun String.isOnlyDigits(): Boolean {
+    if(this.isEmpty()) return false
+
+    this.toCharArray().forEach {
+        if (Character.isLetter(it))
+            return false
+    }
+
+    return true
+}
+
+fun String.isSeriesValidate(): Boolean {
+    if(this.isEmpty() || this.length != 7) return false
+
+    return isOnlyDigits()
+}
