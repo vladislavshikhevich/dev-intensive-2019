@@ -1,5 +1,7 @@
 package ru.skillbranch.devintensive.extensions
 
+import android.util.Log
+
 fun String.truncate(count: Int = 16) : String {
     if(this.trim().length <= count) return this.trim()
     return "${this.trim().substring(0, Math.min(this.length, count)).trim()}..."
@@ -27,21 +29,21 @@ fun String.isStartsLowerCase(): Boolean {
 }
 
 fun String.containsDigit(): Boolean {
-    if(this.isEmpty()) return false
+    if(this.isEmpty()) return true
 
     this.toCharArray().forEach {
-        if (!Character.isLetter(it))
-            return false
+        if (Character.isDigit(it))
+            return true
     }
 
-    return true
+    return false
 }
 
 fun String.isOnlyDigits(): Boolean {
     if(this.isEmpty()) return false
 
     this.toCharArray().forEach {
-        if (Character.isLetter(it))
+        if (!Character.isDigit(it))
             return false
     }
 

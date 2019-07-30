@@ -17,16 +17,27 @@ class Bender(
     }
 
     fun listenAnswer(answer: String) : Pair<String, Triple<Int, Int, Int>> {
-        return if (question.answers.contains(answer.toLowerCase()) && question.validate(answer)) {
-            question = question.nextQuestion()
-            "Отлично - это правильный ответ!\n${question.question}" to status.color
-        }
-        else if (!question.validate(answer)) {
+        return if (!question.validate(answer)) {
             "${question.errorMessage}\n${question.question}" to status.color
         }
+        else if (question.answers.contains(answer.toLowerCase()) && question.validate(answer)) {
+            question = question.nextQuestion()
+            if(question == Question.IDLE)
+                "Отлично - ты справился\nНа этом все, вопросов больше нет" to status.color
+            else
+                "Отлично - ты справился\n${question.question}" to status.color
+        }
         else {
+            if(question == Question.IDLE)
+                return "На этом все, вопросов больше нет" to status.color
+            val isNewCycle = status == Status.CRITICAL
             status = status.nextStatus()
-            "Это неправильный ответ!\n${question.question}" to status.color
+            return if (isNewCycle) {
+                question = Question.NAME
+                "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
+            } else {
+                "Это неправильный ответ\n${question.question}" to status.color
+            }
         }
     }
 
@@ -34,7 +45,7 @@ class Bender(
         NORMAL(Triple(255, 255, 255)),
         WARNING(Triple(255, 120, 0)),
         DANGER(Triple(255, 60, 60)),
-        CRITICAL(Triple(255, 255, 0));
+        CRITICAL(Triple(255, 0, 0));
 
         fun nextStatus(): Status {
             return if (this.ordinal < values().lastIndex)
@@ -86,7 +97,7 @@ class Bender(
             override fun nextQuestion(): Question = SERIAL
 
             override fun validate(answer: String): Boolean {
-                return !answer.isOnlyDigits()
+                return answer.isOnlyDigits()
             }
         },
         SERIAL("Мой серийный номер?", listOf("2716057")) {
@@ -97,7 +108,7 @@ class Bender(
             override fun nextQuestion(): Question = IDLE
 
             override fun validate(answer: String): Boolean {
-                return !answer.isSeriesValidate()
+                return answer.isSeriesValidate()
             }
         },
         IDLE("На этом все, вопросов больше нет", listOf()) {

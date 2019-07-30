@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -24,21 +26,31 @@ class MainActivity :
 
     lateinit var benderObj: Bender
 
+    lateinit var textTxt: TextView
+    lateinit var messageEt: EditText
+    lateinit var sendBtn: ImageView
+    lateinit var benderImage: ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        textTxt = findViewById(R.id.tv_text)
+        messageEt = findViewById(R.id.et_message)
+        sendBtn = findViewById(R.id.iv_send)
+        benderImage = findViewById(R.id.iv_bender)
 
         val status = savedInstanceState?.getString(KEY_BENDER_STATUS) ?: Bender.Status.NORMAL.name
         val question = savedInstanceState?.getString(KEY_BENDER_QUESTION) ?: Bender.Question.NAME.name
         benderObj = Bender(Bender.Status.valueOf(status), Bender.Question.valueOf(question))
 
         val (r, g, b) = benderObj.status.color
-        iv_bender.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
+        benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
 
-        tv_text.text = benderObj.askQuestion()
+        textTxt.text = benderObj.askQuestion()
 
-        et_message.setOnEditorActionListener(this)
-        iv_send.setOnClickListener { answer() }
+        messageEt.setOnEditorActionListener(this)
+        sendBtn.setOnClickListener { answer() }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -55,7 +67,6 @@ class MainActivity :
             event.action == KeyEvent.ACTION_DOWN &&
             event.keyCode == KeyEvent.KEYCODE_ENTER) {
             if (event == null || !event.isShiftPressed) {
-                Log.e("TAG", "hi")
                 answer()
                 hideKeyboard()
                 return true
