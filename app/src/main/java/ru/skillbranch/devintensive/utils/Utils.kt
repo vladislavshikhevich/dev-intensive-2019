@@ -1,6 +1,10 @@
 package ru.skillbranch.devintensive.utils
 
+import android.content.Context
+import android.graphics.*
+import androidx.annotation.ColorInt
 import ru.skillbranch.devintensive.extensions.TimeUnits
+import kotlin.math.min
 
 object Utils {
 
@@ -72,6 +76,72 @@ object Utils {
             TimeUnits.HOUR -> arrayOf("час", "часа", "часов")
             TimeUnits.DAY -> arrayOf("день", "дня", "дней")
         }
+    }
+
+    fun isValidateRepository(repository: String): Boolean = repository.isEmpty() || repository.matches(
+        Regex("^(https://){0,1}(www.){0,1}github.com\\/[A-z\\d](?:[A-z\\d]|(_|-)(?=[A-z\\d])){0,256}(/)?\$",RegexOption.IGNORE_CASE)) &&
+            !repository.matches(Regex("^.*(" +
+                    "\\/enterprise|" +
+                    "\\/features|" +
+                    "\\/topics|" +
+                    "\\/collections|" +
+                    "\\/trending|" +
+                    "\\/events|" +
+                    "\\/marketplace" +
+                    "|\\/pricing|" +
+                    "\\/nonprofit|" +
+                    "\\/customer-stories|" +
+                    "\\/security|" +
+                    "\\/login|" +
+                    "\\/join)\$",RegexOption.IGNORE_CASE)
+            )
+
+    fun convertDpToPx(context: Context, dp: Int): Int {
+        val scale = context.resources.displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
+    }
+
+
+    fun convertPxToDp(context: Context, px: Int): Int {
+        val scale = context.resources.displayMetrics.density
+        return (px / scale + 0.5f).toInt()
+    }
+
+
+    fun convertSpToPx(context: Context, sp: Int): Int {
+        return sp * context.resources.displayMetrics.scaledDensity.toInt()
+    }
+
+    fun textBitmap(
+        width: Int,
+        height: Int,
+        text: String = "",
+        @ColorInt bgColor: Int = Color.BLACK,
+        textSize: Int = (min(width, height) * 0.6f).toInt(),
+        @ColorInt textColor: Int = Color.WHITE
+    ): Bitmap {
+        val bitmap: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(bgColor)
+
+        if (text.isNotEmpty()) {
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+            paint.textSize = textSize.toFloat()
+            paint.color = textColor
+            paint.textAlign = Paint.Align.CENTER
+
+            val textBounds = Rect()
+            paint.getTextBounds(text, 0, text.length, textBounds)
+
+            val backgroundBounds = RectF()
+            backgroundBounds.set(0f, 0f, width.toFloat(), height.toFloat())
+
+            val textBottom = backgroundBounds.centerY() - textBounds.exactCenterY()
+            canvas.drawText(text, backgroundBounds.centerX(), textBottom, paint)
+        }
+
+        return bitmap
     }
 }
 

@@ -4,6 +4,10 @@ import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -13,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Profile
+import ru.skillbranch.devintensive.utils.Utils.textBitmap
 import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 
 class ProfileActivity :
@@ -47,6 +52,8 @@ class ProfileActivity :
         viewModel.getTheme().observe(this, Observer {
             updateTheme(it)
         })
+        viewModel.getRepositoryError().observe(this, Observer { updateRepoError(it) })
+        viewModel.isErrorRepository().observe(this, Observer { updateRepository(it) })
     }
 
     private fun updateTheme(mode: Int) {
@@ -54,11 +61,35 @@ class ProfileActivity :
     }
 
     private fun updateUI(profile: Profile) {
+        if (profile.firstName.isNotBlank() || profile.lastName.isNotBlank()) {
+            val initials = "${profile.firstName.firstOrNull() ?: ""}${profile.lastName.firstOrNull() ?: ""}"
+            val tv = TypedValue()
+            theme.resolveAttribute(R.attr.colorAccent, tv, true)
+            val backgroundColor = tv.data
+            iv_avatar.setImageBitmap(textBitmap(
+                iv_avatar.layoutParams.width,
+                iv_avatar.layoutParams.height,
+                initials,
+                backgroundColor)
+            )
+        } else {
+            iv_avatar.setImageDrawable(getDrawable(R.drawable.avatar_default))
+        }
+
         profile.toMap().also {
             for ((k, v) in viewFields) {
                 v.text = it[k].toString()
             }
         }
+    }
+
+    private fun updateRepository(isError: Boolean) {
+        if (isError) et_repository.text!!.clear()
+    }
+
+    private fun updateRepoError(isError: Boolean) {
+        wr_repository.isErrorEnabled = isError
+        wr_repository.error = if (isError) "Невалидный адрес репозитория" else ""
     }
 
     private fun initViews(savedInstanceState: Bundle?) {
@@ -77,6 +108,8 @@ class ProfileActivity :
         showCurrentMode(isEditMode)
 
         btn_edit.setOnClickListener {
+            viewModel.onRepoEditCompleted(wr_repository.isErrorEnabled)
+
             if (isEditMode) saveProfileInfo()
             isEditMode = !isEditMode
             showCurrentMode(isEditMode)
@@ -85,6 +118,16 @@ class ProfileActivity :
         btn_switch_theme.setOnClickListener {
             viewModel.switchTheme()
         }
+
+        et_repository.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.onRepositoryChanged(s.toString())
+            }
+        })
     }
 
     private fun showCurrentMode(isEdit: Boolean) {

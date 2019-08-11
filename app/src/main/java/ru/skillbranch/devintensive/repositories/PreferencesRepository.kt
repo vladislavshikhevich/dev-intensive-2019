@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatDelegate
 import ru.skillbranch.devintensive.App
+import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Profile
 
 object PreferencesRepository {
@@ -26,6 +27,8 @@ object PreferencesRepository {
     }
 
     fun getAppTheme(): Int = prefs.getInt(APP_THEME, AppCompatDelegate.MODE_NIGHT_NO)
+
+    fun getSplashScreen(): Int = R.style.SplashTheme
 
     fun getProfile(): Profile = Profile(
         prefs.getString(FIRST_NAME,"")!!,
