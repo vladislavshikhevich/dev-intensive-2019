@@ -9,6 +9,7 @@ import ru.skillbranch.devintensive.models.Profile
 
 object PreferencesRepository {
 
+    private const val NICKNAME = "NICKNAME"
     private const val FIRST_NAME = "FIRST_NAME"
     private const val LAST_NAME = "LAST_NAME"
     private const val ABOUT = "ABOUT"
@@ -31,6 +32,7 @@ object PreferencesRepository {
     fun getSplashScreen(): Int = R.style.SplashTheme
 
     fun getProfile(): Profile = Profile(
+        prefs.getString(NICKNAME, "")!!,
         prefs.getString(FIRST_NAME,"")!!,
         prefs.getString(LAST_NAME, "")!!,
         prefs.getString(ABOUT, "")!!,
@@ -41,6 +43,7 @@ object PreferencesRepository {
 
     fun saveProfile(profile: Profile) {
         with(profile) {
+            putValue(NICKNAME to nickname)
             putValue(FIRST_NAME to firstName)
             putValue(LAST_NAME to lastName)
             putValue(ABOUT to about)

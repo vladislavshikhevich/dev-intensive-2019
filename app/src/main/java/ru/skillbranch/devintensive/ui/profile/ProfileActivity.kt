@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Profile
+import ru.skillbranch.devintensive.utils.Utils
 import ru.skillbranch.devintensive.utils.Utils.textBitmap
 import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 
@@ -76,9 +77,13 @@ class ProfileActivity :
             iv_avatar.setImageDrawable(getDrawable(R.drawable.avatar_default))
         }
 
+
         profile.toMap().also {
             for ((k, v) in viewFields) {
-                v.text = it[k].toString()
+                if (k == "nickname")
+                    v.text = Utils.transliteration("${profile.firstName} ${profile.lastName}", "_").trim()
+                else
+                    v.text = it[k].toString()
             }
         }
     }
