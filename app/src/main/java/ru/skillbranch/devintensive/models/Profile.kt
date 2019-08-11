@@ -12,7 +12,7 @@ class Profile(
 ) {
 
     val rank: String = "Junior Android Developer"
-    val nickname: String = Utils.transliteration("$firstName $lastName", "_")
+    val nickname: String = Utils.transliteration("$firstName $lastName", "_").trim()
 
     fun toMap(): Map<String, Any> = mapOf(
         "nickName" to nickname,
